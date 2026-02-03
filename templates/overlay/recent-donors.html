@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static',filename='overlay.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <div id="donors-box">
+        <h1></h1>
+        <h2></h2>
+    </div>
+</div>
+
+
+<script src="{{ url_for('static',filename='anime.min.js') }}"></script>
+<script>
+
+
+    const donors_box = document.querySelector('#donors-box')
+    const donors_box_h1 = donors_box.querySelector('h1')
+    const donors_box_h2 = donors_box.querySelector('h2')
+
+    var recent_donors = []
+    var current_donor = 0
+
+
+    const show_donors = (index) => {
+        console.log(index)
+
+        if (recent_donors.length == 0) {
+            setTimeout(show_donors, 2000, index)
+            return
+        }
+
+        let donor = recent_donors[index]
+
+        donors_box_h1.innerText = donor['name']
+        donors_box_h2.innerText = Number(donor['amount']).toLocaleString("en") + " تومان"
+
+        anime.timeline({
+            easing: 'easeOutSine',
+            loop: false,
+            direction: 'normal',
+        })
+
+            .add({
+                targets: donors_box_h1,
+                width: [0, donors_box_h1.scrollWidth],
+                duration: 300,
+
+            })
+             .add({
+                targets: donors_box,
+                borderWidth: 9,
+                duration: 100,
+
+            })
+            .add({
+                targets: donors_box_h2,
+                width: [0, donors_box_h2.scrollWidth],
+                duration: 300,
+
+            })
+
+            .add({
+                duration: 5000,
+
+            })
+
+            .add({
+                targets: donors_box_h1,
+                width: 0,
+                duration: 300,
+
+            })
+             .add({
+                targets: donors_box,
+                borderWidth: 0,
+                duration: 100,
+
+            })
+            .add({
+                targets: donors_box_h2,
+                width: 0,
+                duration: 300,
+
+            })
+            .add({
+                duration: 100,
+                complete: function (anim) {
+
+                    if (current_donor < recent_donors.length - 1) {
+                        current_donor += 1
+                    } else {
+                        current_donor = 0
+                    }
+                    show_donors(current_donor)
+                }
+            })
+    }
+    show_donors(current_donor)
+
+    const get_recent_donors = () => {
+        fetch("{{ url_for('overlay.recent_donors') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({})
+        }).then((res) => {
+            return res.json()
+        }).then((pays) => {
+            recent_donors = pays
+        })
+    }
+    setInterval(get_recent_donors, 1000)
+
+
+</script>
+</body>
+</html>

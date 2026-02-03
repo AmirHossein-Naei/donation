@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تایید شماره موبایل</title>
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+</head>
+<body>
+
+
+<section class="container">
+
+    <form action="#" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" value="{{ phone }}" name="phone">
+        <div class="box">
+            <h1>تایید شماره موبایل</h1>
+            <p>لطفا کدی که برای شماره موبایلتان ارسال شد را وارد کنید</p>
+
+            <div class="input-box">
+                <label for="form-name">کدتایید</label>
+                <input required id="form-name" name="code" type="number" placeholder="0000">
+            </div>
+
+            <div class="input-box">
+                <input type="submit" value="ادامه">
+            </div>
+        </div>
+    </form>
+
+    <a href="/" class="btn">بازگشت</a>
+
+</section>
+
+
+</body>
+</html>

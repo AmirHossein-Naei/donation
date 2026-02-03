@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static',filename='overlay.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <div id="donation-box">
+        <div style="display: flex; align-items: center;;">
+            <h1></h1>
+            <span>دونیت کرد</span>
+        </div>
+        <h2></h2>
+        <p></p>
+    </div>
+</div>
+
+
+<audio src="{{ DONATE_SOUND_URL }}"></audio>
+
+<script src="{{ url_for('static',filename='anime.min.js') }}"></script>
+<script>
+
+
+    const donation_box = document.querySelector('#donation-box')
+    const donation_box_h1 = donation_box.querySelector('h1')
+    const donation_box_h2 = donation_box.querySelector('h2')
+    const donation_box_p = donation_box.querySelector('p')
+    const donation_box_span = donation_box.querySelector('span')
+    const donation_audio = document.querySelector('audio')
+
+    const donations = []
+    var is_showing = false
+
+    const show_donations = () => {
+        if (is_showing || donations.length === 0) {
+            return
+        }
+        is_showing = true
+
+        let donation = donations.shift()
+
+        donation_box_h1.innerText = donation['name']
+        donation_box_h2.innerText = Number(donation['amount']).toLocaleString("en") + " تومان"
+        donation_box_p.innerText = donation['description']
+        if (donation['description'] == undefined) {
+            donation_box_p.style.display = 'none'
+        }
+
+
+        anime.timeline({
+            easing: 'easeOutSine',
+            loop: false,
+            direction: 'normal',
+        })
+
+            .add({
+                targets: donation_box,
+                scale: [0, 1],
+                duration: 800,
+                 begin: (a) => {
+                    donation_audio.play()
+                }
+            })
+            .add({
+                duration: 400,
+            })
+            .add({
+                targets: donation_box,
+                height: [0, 120],
+                padding: [0, 10],
+                duration: 1000,
+                complete: (a) => {
+                    donation_box.style.overflow = 'visible'
+                }
+            })
+
+            .add({
+                targets: donation_box_h1,
+                width: [0, donation_box_h1.scrollWidth],
+                duration: 500,
+            })
+
+            .add({
+                targets: donation_box_span,
+                width: [0, 80],
+                duration: 500,
+            })
+
+            .add({
+                targets: donation_box_h2,
+                height: [0, donation_box_h2.scrollHeight],
+                duration: 500,
+            })
+
+
+            .add({
+                targets: donation_box_p,
+                opacity: [0, 1],
+                duration: 500,
+            })
+
+
+            .add({
+                duration: 8000
+            })
+            .add({
+                targets: donation_box,
+                opacity: [1, 0],
+                duration: 500,
+            })
+            .add({
+                duration: 2000,
+                complete: function (anim) {
+                    donation_box.style.transform = "scale(0)"
+
+                    is_showing = false
+                    show_donations()
+                }
+            })
+
+
+    }
+
+    const get_new_donations = () => {
+        fetch("{{ url_for('overlay.donation') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({})
+        }).then((res) => {
+            return res.json()
+        }).then((pays) => {
+            pays.forEach((pay) => {
+                donations.push(pay)
+
+            })
+        }).finally(() => {
+            show_donations()
+        })
+    }
+    setInterval(get_new_donations, 10000)
+
+</script>
+</body>
+</html>

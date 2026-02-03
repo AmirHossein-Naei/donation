@@ -1,0 +1,28 @@
+# edit these variables as you need, then change the name of this file to config.py
+
+SQL_CONFIG = 'sqlite:///database.db'
+GATEWAY_MERCHANT_ID = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+GATEWAY_CALLBACK_URL = "http://localhost:8080/verify"
+IPPANEL_AUTH = ""
+SECRET_KEY= ""
+
+OVERLAY_PATH = "12345"
+ADMIN_PATH = "54321"
+
+ADMIN_USERNAME = "amir"
+ADMIN_PASSWORD = "123"
+
+PAGE_PROFILE_NAME_ENGLISH = "Hooshang"
+PAGE_PROFILE_NAME_FARSI = "هوشنگ هوشنگ زاده"
+PAGE_DESCRIPTION = """
+
+"""
+
+
+DONATE_SOUND_URL = "/static/donate.mp3"
+
+
+MIN_AMOUNT = 50_000
+MAX_AMOUNT = 1_000_000
+
+AMOUNT_SUGGESTIONS = []

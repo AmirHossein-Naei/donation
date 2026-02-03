@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل ادمین</title>
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+</head>
+<body>
+
+
+<section class="container">
+    <div class="donations-list">
+
+    </div>
+    <a href="javascript:get_donations(false)" class="btn">بارگیری بیشتری</a>
+
+</section>
+
+<script>
+
+    const donations = document.querySelector('.donations-list')
+
+    var offset = 0
+    var newest_donation_time_created = 0
+    var first_request_sent = false
+
+    function get_donations(check_new_donation) {
+        fetch('{{ url_for("admin.get_donations") }}', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                offset: offset,
+                check_new_donation: check_new_donation ? newest_donation_time_created : -1
+            })
+        }).then((data) => {
+            return data.json()
+        }).then((json) => {
+            if (json.length == 0) {
+                return
+            }
+            if (!check_new_donation) {
+                offset += json.length
+
+                if (newest_donation_time_created == 0) {
+                    newest_donation_time_created = json[0].time_created
+                }
+            } else {
+                newest_donation_time_created = json[json.length - 1].time_created
+            }
+
+
+            json.forEach((donate) => {
+                let donation_box = `
+<div>
+<div >
+    <h1>${donate.name}</h1>
+    <h2>${Number(donate.amount).toLocaleString("en")} تومان</h2>
+</div>
+<div>
+    <p>${donate.description}</p>
+
+    <div class="checkbox">
+        <div>
+        <label>نمایش هشدار در پخش زنده</label><input type="checkbox" disabled ${donate.show_in_livestream ? "checked" : ""} >
+        </div>
+        <div >
+        <label>نمایش  توضیحات در پخش زنده</label><input type="checkbox" disabled ${donate.show_desc_in_livestream ? "checked" : ""} >
+        </div>
+        <div >
+        <label>نمایش در لیست حامیان </label><input type="checkbox" disabled ${donate.show_in_list ? "checked" : ""} >
+        </div>
+    </div>
+</div>
+
+<a class="btn" href='javascript:show_again_in_live("${donate.id}")'>پخش مجدد در لایواستریم</a>
+
+</div>
+        `
+                if (check_new_donation) {
+                    donations.innerHTML = donation_box + donations.innerHTML
+                } else {
+                    donations.innerHTML = donations.innerHTML + donation_box
+                }
+            })
+
+
+        }).finally(() => {
+            if (!first_request_sent) {
+                first_request_sent = true
+                setInterval(() => {
+                    get_donations(true)
+                }, 5000)
+            }
+        })
+    }
+
+    get_donations(false)
+
+
+    function show_again_in_live(donation_id) {
+        fetch('{{ url_for("admin.replay") }}', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id: donation_id
+            })
+        }).then((data) => {
+            return data.json()
+        }).then((json) => {
+
+            if (json.status == 'ok'){
+                alert("انجام شد")
+            }
+        })
+    }
+
+</script>
+
+</body>
+</html>

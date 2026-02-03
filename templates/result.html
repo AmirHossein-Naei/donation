@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نتیجه پرداخت</title>
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+</head>
+<body>
+
+
+<section class="container">
+
+    {% if status == 'error' %}
+        <div class="box error">
+            <h1>پرداخت موفق آمیز نبود</h1>
+            <p>{{ msg }}</p>
+        </div>
+    {% elif status == 'success' %}
+        <div class="box success">
+            <h1>پرداخت با موفقیت انجام شد</h1>
+            <table>
+                <tr>
+                    <th>شماره پیگیری</th>
+                    <td>{{ payment.refid }}</td>
+                </tr>
+                <tr>
+                    <th>مبلغ</th>
+                    <td class="amount">{{ payment.amount }}</td>
+                </tr>
+            </table>
+        </div>
+    {% endif %}
+
+
+<a href="/" class="btn">بازگشت</a>
+
+</section>
+
+<script>
+    document.querySelectorAll('.amount').forEach((e) => {
+        e.innerText = Number(e.innerText).toLocaleString("en")
+    })
+
+</script>
+
+</body>
+</html>

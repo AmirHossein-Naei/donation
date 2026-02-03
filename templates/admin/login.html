@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود به پنل ادمین</title>
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+</head>
+<body>
+
+
+<section class="container">
+
+    <form class="box" action="#" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+
+        <div class="input-box">
+            <label for="form-username">نام کاربری</label>
+            <input type="text"
+            required id="form-username" name="username"
+                   placeholder="نام کاربری">
+
+        </div>
+         <div class="input-box">
+            <label for="form-password">رمز عبور</label>
+            <input type="password"
+            required id="form-password" name="password"
+                   placeholder="رمز عبور">
+
+        </div>
+
+
+        <div class="input-box">
+            <input type="submit" value="ورود">
+        </div>
+    </form>
+
+</section>
+
+<script>
+    document.querySelectorAll('.amount').forEach((e) => {
+        e.innerText = Number(e.innerText).toLocaleString("en")
+    })
+
+    const amountInput = document.querySelector("#amount")
+    document.querySelectorAll(".amount-suggestion > div ").forEach((e) => {
+        e.onclick = (event) => {
+            amountInput.value = event.currentTarget.getAttribute('data-amount')
+            if (event.currentTarget.getAttribute('data-amount') == "")
+                amountInput.focus()
+        }
+    })
+
+
+</script>
+
+</body>
+</html>

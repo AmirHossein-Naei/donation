@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حمایت از {{ config.PAGE_PROFILE_NAME_FARSI }} | {{ config.PAGE_PROFILE_NAME_ENGLISH }}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+</head>
+<body>
+
+
+<section class="container">
+
+    <div class="box">
+        <div class="profile-image">{{ config.PAGE_PROFILE_NAME_ENGLISH[0] }}</div>
+        <div>
+            <h1>{{ config.PAGE_PROFILE_NAME_FARSI }}</h1>
+            <h2>{{ config.PAGE_PROFILE_NAME_ENGLISH }}</h2>
+        </div>
+        <p>{{ config.PAGE_DESCRIPTION }}</p>
+    </div>
+
+    <form class="box" action="{{ url_for('main.pay') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="input-box wide">
+            <input required min="{{ config.MIN_AMOUNT }}" max="{{ config.MAX_AMOUNT }}" id="amount" name="amount"
+                   type="number"
+                   placeholder="مبلغ">
+
+            <span class="tag">تومان</span>
+        </div>
+
+        <div class="amount-suggestion">
+            {% for s in amount_suggestions %}
+                <div data-amount="{{ s }}">
+                    <span class="amount">{{ s }} </span> تومان
+                </div>
+            {% endfor %}
+            <div data-amount="">
+                دلخواه
+            </div>
+        </div>
+
+
+        <div class="input-box">
+            <label for="form-name">نام حمایت کننده</label>
+            <input required id="form-name" name="name" type="text" placeholder="هوشنگ هوشنگی">
+        </div>
+        <div class="input-box">
+            <label for="form-phone">شماره موبایل</label>
+            <input type="tel"
+                   inputmode="numeric"
+                   maxlength="11"
+                   title="شماره موبایل باید 11 رقم باشه و با 09 شروع بشه"
+                   pattern="^09\d{9}$" required id="form-phone" name="phone"
+                   value="{{ session['phone'] if session['phone'] else "" }}"
+                   placeholder="در پخش زنده نمایش داده نمیشود">
+
+        </div>
+
+        <div class="input-box">
+            <label for="form-description">توضیحات</label>
+            <textarea required id="form-description" name="description" placeholder="توضیحات شما اینجاست..."></textarea>
+        </div>
+        <div class="input-box">
+            <input id="form-show-in-livestream" checked type="checkbox" name="show_in_livestream"
+                   onchange="if(!this.checked) document.querySelector('#form-show-desc-in-livestream').checked = false ">
+            <label for="form-show-in-livestream">
+                <span class="material-symbols-rounded">done</span>
+                نمایش هشدار در پخش زنده
+            </label>
+
+        </div>
+        <div class="input-box">
+            <input id="form-show-desc-in-livestream" checked type="checkbox" name="show_desc_in_livestream"
+                   onchange="if(this.checked) document.querySelector('#form-show-in-livestream').checked =  true ">
+            <label for="form-show-desc-in-livestream">
+                <span class="material-symbols-rounded">done</span>
+                نمایش توضیحات در پخش زنده
+            </label>
+
+        </div>
+        <div class="input-box">
+            <input id="form-show-in-list" checked type="checkbox" name="show_in_list">
+            <label for="form-show-in-list">
+                <span class="material-symbols-rounded">done</span>
+                نمایش در لیست حامیان
+            </label>
+
+        </div>
+
+        <div class="input-box">
+            <input type="submit" value="پرداخت">
+        </div>
+    </form>
+
+</section>
+
+<script>
+    document.querySelectorAll('.amount').forEach((e) => {
+        e.innerText = Number(e.innerText).toLocaleString("en")
+    })
+
+    const amountInput = document.querySelector("#amount")
+    document.querySelectorAll(".amount-suggestion > div ").forEach((e) => {
+        e.onclick = (event) => {
+            amountInput.value = event.currentTarget.getAttribute('data-amount')
+            if (event.currentTarget.getAttribute('data-amount') == "")
+                amountInput.focus()
+        }
+    })
+
+
+</script>
+
+</body>
+</html>
