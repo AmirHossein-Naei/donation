@@ -165,7 +165,7 @@ def send_otp(phone, verify_code):
 def verify_phone():
     payment_id = request.args.get('payment')
 
-    check_payment_exist = Payment.query.filter(Payment.id == payment_id, Payment.time_created < (time.time() - 1800)).first_or_404()
+    check_payment_exist = Payment.query.filter(Payment.id == payment_id, Payment.time_created > (time.time() - 1800)).first_or_404()
 
     if request.method == "GET":
         phone = request.args.get('phone')
