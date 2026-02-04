@@ -178,7 +178,6 @@ def verify_phone():
                 not (sent_verify_codes[phone]['expire_at'] > time.time()):
             sent_verify_codes[phone] = {"code": verify_code, "expire_at": int(time.time() + 300)}  # 5 mins
             send_otp(phone, verify_code)
-            print(sent_verify_codes)
 
         return render_template('verify-phone.html', phone=phone)
     else:
@@ -191,7 +190,8 @@ def verify_phone():
 
             session.permanent = True
             session['phone'] = phone
+            sent_verify_codes[phone] = {"code": 0, "expire_at": 0}
             return redirect(url_for('main.pay', payment=payment_id))
         else:
-            return redirect(url_for('main.verify_phone', phone=phone, payment_id=payment_id))
+            return redirect(url_for('main.verify_phone', phone=phone, payment=payment_id))
 
